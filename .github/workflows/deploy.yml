@@ -23,17 +23,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
-      - uses: actions/cache@v4
-        id: node-cache
-        with:
-          path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Install dependencies
+        run: npm i
 
-      - if: steps.node-cache.outputs.cache-hit != 'true'
-        run: npm install --frozen-lockfile || npm install
-
-      - run: ./node_modules/.bin/next build
+      - name: Build
+        run: npx next build
 
       - uses: actions/upload-pages-artifact@v3
         with:
