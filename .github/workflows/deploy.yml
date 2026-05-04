@@ -22,7 +22,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
 
       - uses: actions/cache@v4
         id: node-cache
@@ -31,7 +31,7 @@ jobs:
           key: node-modules-${{ hashFiles('package-lock.json') }}
 
       - if: steps.node-cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm install --frozen-lockfile || npm install
 
       - run: ./node_modules/.bin/next build
 
