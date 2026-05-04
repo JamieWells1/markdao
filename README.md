@@ -1,6 +1,8 @@
 # markdao
 
-AI-powered learning worksheets, pure client-side application.
+*mark* as in markdown. *dao* (道) as in the way — the Chinese concept of the path, the way of understanding. Together: the way of learning through markdown.
+
+AI-powered learning worksheets. No signup, no backend, no fuss.
 
 **Just go use it: [jamiewells1.github.io/markdao](https://jamiewells1.github.io/markdao/)**
 
