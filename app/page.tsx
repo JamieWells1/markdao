@@ -116,6 +116,16 @@ These are distinct from Match Up questions (which use a \`| Match |\` header). R
 
 You may also use bullet lists (\`-\`) for supplementary information outside of question areas.
 
+You can include display-only code blocks with syntax highlighting using standard fenced code blocks with a language tag. These are read-only (not editable by the student) and are for showing examples, reference code, or starter snippets:
+
+  \`\`\`cpp
+  double square(double x) {
+      return x * x;
+  }
+  \`\`\`
+
+These are distinct from code *answer* blocks (which use \`> \`\`\`language\` inside a blockquote).
+
 --- GUIDELINES ---
 
 - Include brief teaching content and context before question sections — this is a learning worksheet, not just a quiz. Help the student understand the material, not just test them.

@@ -199,6 +199,20 @@ Standalone markdown tables (not inside a question) are rendered as formatted ref
 
 Note: Tables that are part of a Match Up question (with a `| Match |` header) are handled separately as interactive match-up exercises.
 
+### Code Blocks (Display-Only)
+
+Fenced code blocks with a language tag are rendered with syntax highlighting as read-only display content. Use these for showing example code, reference snippets, or starter code that the student should read but not edit.
+
+````
+```cpp
+double celsiusToFahrenheit(double celsius) {
+    return (celsius * 9.0 / 5.0) + 32.0;
+}
+```
+````
+
+These are distinct from code *answer* blocks (which use `> ```language` inside a blockquote and are editable).
+
 ### Bullet Lists
 
 Unordered lists (using `-`) outside of question answer areas are rendered as plain text content.

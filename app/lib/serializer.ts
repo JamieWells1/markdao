@@ -11,6 +11,10 @@ export type Answers = Record<number, AnswerValue>;
 function serializeBlock(block: Block, answers: Answers): string {
   if (block.type === "text") return block.content;
 
+  if (block.type === "code-block") {
+    return "```" + block.language + "\n" + block.content + "\n```";
+  }
+
   if (block.type === "table") {
     const lines: string[] = [];
     lines.push("| " + block.headers.join(" | ") + " |");

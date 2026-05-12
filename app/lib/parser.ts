@@ -58,6 +58,11 @@ export type Block =
       type: "table";
       headers: string[];
       rows: string[][];
+    }
+  | {
+      type: "code-block";
+      language: string;
+      content: string;
     };
 
 function parseFrontmatter(text: string): Frontmatter {
@@ -128,7 +133,8 @@ export function parseWorksheet(markdown: string): ParsedWorksheet {
           l.match(/^## /) ||
           l.match(/^\|/) ||
           l.match(/^- /) ||
-          l.match(/^>/)
+          l.match(/^>/) ||
+          l.match(/^```/)
         ) break;
         descLines.push(l);
         idx++;
@@ -337,6 +343,25 @@ export function parseWorksheet(markdown: string): ParsedWorksheet {
       continue;
     }
 
+    // Fenced code block (display-only, not inside a blockquote)
+    if (currentSection && line.trim().match(/^```(\w*)/)) {
+      const langMatch = line.trim().match(/^```(\w*)/);
+      const language = langMatch?.[1] || "plaintext";
+      idx++;
+      const codeLines: string[] = [];
+      while (idx < lines.length && !lines[idx].trim().match(/^```\s*$/)) {
+        codeLines.push(lines[idx]);
+        idx++;
+      }
+      idx++; // skip closing ```
+      currentSection.blocks.push({
+        type: "code-block",
+        language,
+        content: codeLines.join("\n"),
+      });
+      continue;
+    }
+
     // Standalone hint/blockquote (not attached to a question)
     if (currentSection && line.trim().match(/^>/) && !line.trim().match(/^>\s*_/) && !line.trim().match(/^>\s*```/) && !line.trim().match(/^>\s*\d+=/) ) {
       const quoteLines: string[] = [];
@@ -380,6 +405,7 @@ export function parseWorksheet(markdown: string): ParsedWorksheet {
         !line.trim().match(/^>\s*\*\*Hint:\*\*/) &&
         !line.trim().match(/^>\s*_/) &&
         !line.trim().match(/^>\s*```/) &&
+        !line.trim().match(/^```/) &&
         !line.trim().match(/^- \[[ x]\]/) &&
         !line.trim().match(/^<!-- select-many -->/) &&
         !line.trim().match(/^>\s*\d+=/)
@@ -392,7 +418,10 @@ export function parseWorksheet(markdown: string): ParsedWorksheet {
           lines[idx].trim() !== "" &&
           !lines[idx].match(/^## /) &&
           !lines[idx].match(/^\d+\.\s/) &&
-          !lines[idx].trim().match(/^\|/)
+          !lines[idx].trim().match(/^\|/) &&
+          !lines[idx].trim().match(/^```/) &&
+          !lines[idx].trim().match(/^- /) &&
+          !lines[idx].trim().match(/^>/)
         ) {
           textLines.push(lines[idx].trim());
           idx++;

@@ -15,6 +15,7 @@ import MatchUp from "./MatchUp";
 import dynamic from "next/dynamic";
 
 const CodeAnswer = dynamic(() => import("./CodeAnswer"), { ssr: false });
+const CodeBlock = dynamic(() => import("./CodeBlock"), { ssr: false });
 
 function BlockRenderer({
   block,
@@ -42,6 +43,9 @@ function BlockRenderer({
       }
       return <p className="text-foreground leading-relaxed">{renderInlineMarkdown(block.content)}</p>;
     }
+
+    case "code-block":
+      return <CodeBlock language={block.language} content={block.content} />;
 
     case "table":
       return (
@@ -212,7 +216,7 @@ export default function WorksheetRenderer({ rawMarkdown, onComplete, onBack }: P
             <BlockRenderer
               key={`${sIdx}-${bIdx}`}
               block={block}
-              answer={answers[block.type !== "text" && block.type !== "table" ? block.id : -1]}
+              answer={answers[block.type !== "text" && block.type !== "table" && block.type !== "code-block" ? block.id : -1]}
               onAnswer={handleAnswer}
             />
           ))}
