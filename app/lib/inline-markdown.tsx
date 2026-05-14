@@ -52,11 +52,11 @@ export function renderInlineMarkdown(text: string): React.ReactNode[] {
   return segments.map((seg, i) => {
     switch (seg.type) {
       case "bold":
-        return <strong key={i}>{seg.content}</strong>;
+        return <strong key={i}>{renderInlineMarkdown(seg.content)}</strong>;
       case "italic":
-        return <em key={i}>{seg.content}</em>;
+        return <em key={i}>{renderInlineMarkdown(seg.content)}</em>;
       case "bold-italic":
-        return <strong key={i}><em>{seg.content}</em></strong>;
+        return <strong key={i}><em>{renderInlineMarkdown(seg.content)}</em></strong>;
       case "code":
         return (
           <code

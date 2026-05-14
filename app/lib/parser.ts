@@ -398,6 +398,16 @@ export function parseWorksheet(markdown: string): ParsedWorksheet {
       continue;
     }
 
+    // H3 sub-heading
+    if (currentSection && line.trim().match(/^### /)) {
+      currentSection.blocks.push({
+        type: "text",
+        content: line.trim(),
+      });
+      idx++;
+      continue;
+    }
+
     // Non-question text content
     if (currentSection && line.trim() !== "") {
       // Skip hint lines and answer template lines that aren't attached to questions
@@ -410,13 +420,14 @@ export function parseWorksheet(markdown: string): ParsedWorksheet {
         !line.trim().match(/^<!-- select-many -->/) &&
         !line.trim().match(/^>\s*\d+=/)
       ) {
-        // Collect consecutive text lines
+        // Collect consecutive text lines (single newlines are soft wraps, join with space)
         const textLines: string[] = [line.trim()];
         idx++;
         while (
           idx < lines.length &&
           lines[idx].trim() !== "" &&
           !lines[idx].match(/^## /) &&
+          !lines[idx].trim().match(/^### /) &&
           !lines[idx].match(/^\d+\.\s/) &&
           !lines[idx].trim().match(/^\|/) &&
           !lines[idx].trim().match(/^```/) &&
@@ -428,7 +439,7 @@ export function parseWorksheet(markdown: string): ParsedWorksheet {
         }
         currentSection.blocks.push({
           type: "text",
-          content: textLines.join("\n"),
+          content: textLines.join(" "),
         });
         continue;
       }

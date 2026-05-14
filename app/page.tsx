@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+
+const SESSION_KEY = "markdao_session";
 import dynamic from "next/dynamic";
 
 const WorksheetRenderer = dynamic(
@@ -468,6 +470,26 @@ export default function Home() {
   const [worksheet, setWorksheet] = useState("");
   const [completedMarkdown, setCompletedMarkdown] = useState("");
 
+  // Restore session on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(SESSION_KEY);
+      if (!saved) return;
+      const s = JSON.parse(saved);
+      if (s.step != null) setStep(s.step);
+      if (s.form) setForm(s.form);
+      if (s.worksheet) setWorksheet(s.worksheet);
+      if (s.completedMarkdown) setCompletedMarkdown(s.completedMarkdown);
+    } catch {}
+  }, []);
+
+  // Persist session on every change
+  useEffect(() => {
+    try {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ step, form, worksheet, completedMarkdown }));
+    } catch {}
+  }, [step, form, worksheet, completedMarkdown]);
+
   const scrollTop = () => window.scrollTo({ top: 0 });
   const next = () => { setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1)); scrollTop(); };
   const back = () => { setStep((s) => Math.max(s - 1, 0)); scrollTop(); };
@@ -476,6 +498,10 @@ export default function Home() {
     next();
   };
   const startOver = () => {
+    try {
+      localStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem("markdao_answers");
+    } catch {}
     setStep(0);
     setForm({
       topic: "",

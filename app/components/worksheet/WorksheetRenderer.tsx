@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { renderInlineMarkdown } from "../../lib/inline-markdown";
 import type { ParsedWorksheet, Block } from "../../lib/parser";
 import { parseWorksheet } from "../../lib/parser";
@@ -29,6 +29,13 @@ function BlockRenderer({
   switch (block.type) {
     case "text": {
       const lines = block.content.split("\n");
+      if (lines.length === 1 && lines[0].match(/^### /)) {
+        return (
+          <h3 className="text-base font-semibold text-foreground">
+            {renderInlineMarkdown(lines[0].replace(/^### /, ""))}
+          </h3>
+        );
+      }
       const isList = lines.every((l) => l.startsWith("- "));
       if (isList) {
         return (
@@ -174,6 +181,28 @@ export default function WorksheetRenderer({ rawMarkdown, onComplete, onBack }: P
     [rawMarkdown]
   );
   const [answers, setAnswers] = useState<Answers>({});
+
+  // Restore answers when worksheet loads; clear if it's a different worksheet
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("markdao_answers");
+      if (saved) {
+        const { worksheet, answers: savedAnswers } = JSON.parse(saved);
+        if (worksheet === rawMarkdown) {
+          setAnswers(savedAnswers);
+          return;
+        }
+      }
+    } catch {}
+    setAnswers({});
+  }, [rawMarkdown]);
+
+  // Persist answers on every change
+  useEffect(() => {
+    try {
+      localStorage.setItem("markdao_answers", JSON.stringify({ worksheet: rawMarkdown, answers }));
+    } catch {}
+  }, [answers, rawMarkdown]);
 
   const handleAnswer = useCallback((id: number, value: AnswerValue) => {
     setAnswers((prev) => ({ ...prev, [id]: value }));
