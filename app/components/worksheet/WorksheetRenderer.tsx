@@ -56,8 +56,8 @@ function BlockRenderer({
 
     case "table":
       return (
-        <div className="rounded-lg border border-border overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="rounded-lg border border-border overflow-x-auto">
+          <table className="w-full text-sm min-w-max">
             <thead>
               <tr className="bg-muted/50">
                 {block.headers.map((h, i) => (
